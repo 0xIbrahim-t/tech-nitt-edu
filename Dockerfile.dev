@@ -1,4 +1,4 @@
-FROM python:slim
+FROM python:3.10-slim
 
 ENV PYTHONUNBUFFERED 1
 
@@ -29,7 +29,7 @@ RUN BUILD_DEPS=" \
 COPY --chown=django:django . .
 
 RUN mkdir /static && chown -R django:django /static
-RUN mkdir /app/media && chown -R django:django /app/media
+RUN chown -R django:django /app/media
 
 USER django:django
 

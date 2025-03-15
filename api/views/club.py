@@ -14,12 +14,24 @@ from django.forms.models import model_to_dict
 
 def list_to_dict(items):
     '''
-    Converts a given QuerySet into a list of dictionaries
+    Converts a given QuerySet into a list of dictionaries.
+    For each item, replace the image field with its URL if it exists.
+    Additionally, add club_name if the object has a club relation.
     '''
     converted = []
     for item in items:
         new_item = model_to_dict(item)
-        del new_item['image']
+        
+        # Handle image field: replace with URL or set to None
+        if hasattr(item, 'image'):
+            new_item["image"] = item.image.url if item.image else None
+        else:
+            new_item["image"] = None
+        
+        # If the object has a 'club' attribute, add the club name
+        if hasattr(item, 'club'):
+            new_item["club_name"] = item.club.name if item.club else None
+
         converted.append(new_item)
     return converted
 
@@ -33,6 +45,29 @@ class AllClubs(View):
         return {
             'data': list_to_dict(clubs)
         }
+    
+
+@method_decorator(JsonResponseDec, name='dispatch')
+class ClubDetail(View):
+    """
+    Returns the details of a single club identified by its name.
+    """
+
+    def get(self, req, club_name):
+        try:
+            club = Club.objects.get(name=club_name)
+        except Club.DoesNotExist:
+            return error_response("Club does not exist")
+        response_data = {
+            "id": club.id,
+            "name": club.name,
+            "email": club.head.email,
+            "abstract": club.abstract,
+            "link": club.link,
+            "image": club.image.url if club.image else None
+        }
+        
+        return response_data
 
 @method_decorator(JsonResponseDec, name='dispatch')
 class Search(View):
@@ -82,7 +117,7 @@ class Create(View):
                 return error_response("Invalid details")
         except Exception as e:
             logger.error(e)
-            return error_response("Club creation failed")
+            return error_response("Club creation failed" + e)
 
 @method_decorator(JsonResponseDec, name='dispatch')
 @method_decorator(CheckAccessPrivilegeDec, name='dispatch')

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.enums import IntegerChoices
 from django.utils.translation import gettext_lazy as _
+from django.db.models import JSONField
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -69,21 +70,16 @@ class Project(TimestampedModel):
     """Project Model"""
 
     name = models.CharField(max_length=255)
-
-    # A short abstract about the Project, size < 10,000 char
     abstract = models.TextField(max_length=1e4)
-
     image = models.FileField(null=True,blank=True,upload_to='media/')
-
     link = models.CharField(max_length=100)
     club = models.ForeignKey('Club', on_delete=models.PROTECT)
-
     head = models.ForeignKey("User", on_delete=models.CASCADE)
+    techstack = models.JSONField(null=True, blank=True, default=list, help_text="List of tech stack image URLs/paths")
 
     def __str__(self):
         """Returns name of project"""
-        # TODO
-        pass
+        return self.name
 
 class ProjectMemberRelationship(models.Model):
     """Project Member Relation Model
@@ -115,6 +111,17 @@ class ProjectMemberPrivilege(models.Model):
 
     # human readable privilege name
     name = models.CharField(max_length=25)
+
+
+class ProjectMember(models.Model):
+    project = models.ForeignKey("Project", on_delete=models.CASCADE, related_name="members")
+    name = models.CharField(max_length=255)
+    profile_pic = models.FileField(null=True, blank=True, upload_to='media/project_members/')
+
+    def __str__(self):
+        return self.name
+    
+
 
 class UserManager(BaseUserManager):
     """Django requires that custom users define their own Manager class. By

@@ -14,6 +14,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL(
+            sql="CREATE EXTENSION IF NOT EXISTS unaccent;",
+            reverse_sql="DROP EXTENSION IF EXISTS unaccent;"
+        ),
         migrations.CreateModel(
             name='User',
             fields=[

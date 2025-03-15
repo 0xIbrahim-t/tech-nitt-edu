@@ -1,1 +1,1 @@
-admin_mail = ["112120072@nitt.edu"]
+admin_mail = ["112123031@nitt.edu"]

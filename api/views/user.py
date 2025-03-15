@@ -80,6 +80,7 @@ class RegisterFormView(View):
             return error_response("Please use webmail")
         
         if validate_email(email) and len(password) >= 8 and name is not None:
+            print(f"this is the email {email} - {admin_mail}")
             if email in admin_mail:
                 is_admin = True
             if not User.objects.filter(email=email).exists():
@@ -116,3 +117,25 @@ class ResetPassRequest(View):
 class ResetPassUpdate(View):
     def post(self, req):
         pass
+
+
+@method_decorator(JsonResponseDec, name='dispatch')
+class IsLoggedInView(View):
+    def get(self, req):
+        """
+        Checks if the user is logged in.
+        Returns user details if logged in, otherwise indicates the user is not logged in.
+        """
+        user_id = req.session.get('user_id')
+        if user_id:
+            try:
+                user = User.objects.get(id=user_id)
+                logger.info(f"User {user.email} is logged in.")
+                return {"loggedIn": True, "email": user.email, "name": user.name}
+            except User.DoesNotExist:
+                logger.warning("Session user not found in database.")
+                # Clear session if user doesn't exist
+                req.session.pop('user_id', None)
+                return {"loggedIn": False, "error": "User does not exist."}
+        else:
+            return {"loggedIn": False}
