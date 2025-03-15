@@ -2,6 +2,7 @@ from django.views.generic import View
 from api.controllers.response_format import error_response
 from django.contrib.auth import authenticate, login
 from api.controllers.user_utilities import *
+from django.shortcuts import redirect
 from api.utils.utils import *
 from api.models import User
 from api.decorators.response import JsonResponseDec
@@ -139,3 +140,31 @@ class IsLoggedInView(View):
                 return {"loggedIn": False, "error": "User does not exist."}
         else:
             return {"loggedIn": False}
+        
+
+
+class UserRedirectView(View):
+    def get(self, request):
+        user_id = request.session.get('user_id')
+
+        if not user_id:
+            logger.info("User not logged in, redirecting to home.")
+            return redirect('/')
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            logger.warning("User not found in database, clearing session and redirecting to home.")
+            request.session.pop('user_id', None)
+            return redirect('/')
+
+        if user.is_overall_admin:  # Assuming this field exists in your model
+            logger.info(f"User {user.email} is an overall admin, redirecting to Technical Council.")
+            return redirect('/admin/technicalcouncil')
+
+        if user.is_club_head:  # Assuming this field exists in your model
+            logger.info(f"User {user.email} is a club head, redirecting to Club Heads.")
+            return redirect('/admin/clubheads')
+
+        logger.info(f"User {user.email} has no admin role, redirecting to home.")
+        return redirect('/')
