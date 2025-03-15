@@ -75,6 +75,7 @@ class Migration(migrations.Migration):
                 ('link', models.CharField(max_length=100)),
                 ('club', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.club')),
                 ('head', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('techstack', models.JSONField(blank=True, null=True, default=list, help_text="List of tech stack image URLs/paths")),
             ],
             options={
                 'ordering': ['-created_at', '-updated_at'],
