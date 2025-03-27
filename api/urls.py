@@ -1,5 +1,7 @@
 from django.urls import re_path as url
 from .views import user, project, club, admin
+from django.conf import settings
+from django.conf.urls.static import static
 
 # namespacing app
 app_name = 'api'
@@ -58,4 +60,4 @@ urlpatterns = [
     url('club_head/remove_head/', admin.ClubHeadRemoveClubHead.as_view(), name='club_head-remove-club-head'),
     url('club_head/', admin.ClubHeadDashboard.as_view(), name='club-head-dashboard'),
     
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

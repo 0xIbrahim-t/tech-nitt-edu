@@ -133,7 +133,10 @@ class IsLoggedInView(View):
             try:
                 user = User.objects.get(id=user_id)
                 logger.info(f"User {user.email} is logged in.")
-                return {"loggedIn": True, "email": user.email, "name": user.name}
+                if user.email in utils.admin_mail:
+                    return {"loggedIn": True, "isAdmin": True, "email": user.email, "name": user.name}
+                else:
+                    return {"loggedIn": True, "isAdmin": False, "email": user.email, "name": user.name}
             except User.DoesNotExist:
                 logger.warning("Session user not found in database.")
                 # Clear session if user doesn't exist
@@ -147,6 +150,7 @@ class IsLoggedInView(View):
 class UserRedirectView(View):
     def get(self, request):
         user_id = request.session.get('user_id')
+        print(utils.admin_mail)
 
         if not user_id:
             logger.info("User not logged in, redirecting to home.")
@@ -154,7 +158,7 @@ class UserRedirectView(View):
 
         try:
             user = User.objects.get(id=user_id)
-            
+
         except User.DoesNotExist:
             logger.warning("User not found in database, clearing session and redirecting to home.")
             request.session.pop('user_id', None)

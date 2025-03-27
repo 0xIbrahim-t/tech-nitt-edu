@@ -106,5 +106,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_privileges, reverse_func),
+        migrations.RunPython(create_privileges),
     ]
