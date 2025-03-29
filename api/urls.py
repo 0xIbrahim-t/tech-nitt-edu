@@ -42,7 +42,7 @@ urlpatterns = [
     url('club/search', club.Search.as_view(), name='club-search'),
     # create route 
     url('club/create', club.Create.as_view(), name='club-create'),
-    url(r'^club/(?P<name>[\w\s-]+)$', club.ClubDetail.as_view(), name='club-detail'),
+    url(r'^club/(?P<club_name>[\w\s-]+)$', club.ClubDetail.as_view(), name='club-detail'),
     # edit route 
     url('club/edit', club.Edit.as_view(), name='club-edit'),
 
@@ -60,4 +60,4 @@ urlpatterns = [
     url('club_head/remove_head/', admin.ClubHeadRemoveClubHead.as_view(), name='club_head-remove-club-head'),
     url('club_head/', admin.ClubHeadDashboard.as_view(), name='club-head-dashboard'),
     
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
