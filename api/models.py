@@ -32,7 +32,7 @@ class Club(TimestampedModel):
     abstract = models.TextField(max_length=1e4)
     link = models.CharField(max_length=100)
 
-    image = models.FileField(null=True,blank=True,upload_to='')
+    image = models.FileField(null=True,blank=True,upload_to='media/')
 
     head = models.ForeignKey("User", on_delete=models.CASCADE)
 
@@ -71,7 +71,7 @@ class Project(TimestampedModel):
 
     name = models.CharField(max_length=255)
     abstract = models.TextField(max_length=1e4)
-    image = models.FileField(null=True,blank=True,upload_to='')
+    image = models.FileField(null=True,blank=True,upload_to='media/')
     link = models.CharField(max_length=100)
     club = models.ForeignKey('Club', on_delete=models.PROTECT)
     head = models.ForeignKey("User", on_delete=models.CASCADE)
